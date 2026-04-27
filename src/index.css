@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-amazon-dark: #232F3E;
+  --color-amazon-darker: #131A22;
+  --color-amazon-orange: #FF9900;
+  --color-amazon-orange-hover: #E38900;
+  
+  --color-glass-bg: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-glass-hover: rgba(255, 255, 255, 0.1);
+
+  --font-inter: 'Inter', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+}
+
+@layer base {
+  body {
+    background: linear-gradient(135deg, var(--color-amazon-darker) 0%, var(--color-amazon-dark) 100%);
+    min-height: 100vh;
+    @apply font-inter text-white;
+  }
+  
+  h1, h2, h3, h4 {
+    @apply font-outfit;
+  }
+}
+
+@layer components {
+  .glassmorphism {
+    @apply bg-glass-bg border border-glass-border rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .btn-primary {
+    @apply bg-amazon-orange text-amazon-darker font-outfit font-bold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed enabled:hover:bg-amazon-orange-hover enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_4px_12px_rgba(255,153,0,0.3)];
+  }
+
+  .btn-secondary {
+    @apply bg-glass-bg text-white border border-glass-border font-outfit font-bold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed enabled:hover:bg-glass-hover;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-400 border border-transparent font-outfit font-bold py-3 px-6 rounded-lg inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer enabled:hover:text-white enabled:hover:bg-glass-bg;
+  }
+}
