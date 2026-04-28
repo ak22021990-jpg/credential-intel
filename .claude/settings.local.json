@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"C:/Users/anoop/.claude/statusline.sh\")",
+      "Bash(where jq:*)",
+      "Read(//c/Users/anoop/**)"
+    ]
+  }
+}
