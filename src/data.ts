@@ -1,4 +1,6 @@
-export const referenceData = [
+import { ReferenceItem, DifferenceItem, MiniGame } from './types';
+
+export const referenceData: ReferenceItem[] = [
   {
     "country": "United States",
     "summary": "A decentralized system with K-12 schooling, community colleges, colleges, and universities using associate, bachelor, master, and doctoral degree ladders.",
@@ -29,7 +31,7 @@ export const referenceData = [
   }
 ];
 
-export const differenceData = [
+export const differenceData: DifferenceItem[] = [
   {
     "title": "College vs University",
     "body": "In the U.S., both may award bachelor degrees. In Canada, colleges lean applied and universities are the main degree route. In India, a college is often affiliated to a degree-awarding university."
@@ -44,7 +46,7 @@ export const differenceData = [
   }
 ];
 
-export const miniGames = [
+export const miniGames: MiniGame[] = [
   {
     "id": "country-match",
     "badge": "Operation: Signal Scan",
@@ -52,6 +54,29 @@ export const miniGames = [
     "description": "Scan applicant profile clues and determine the origin country. Speed and accuracy matter.",
     "emptyMessage": "Select the country that best matches the applicant's profile clues.",
     "completionMessage": "Signal Scan Complete. You successfully identified country-specific terminology.",
+    "flags": ["in", "ca", "us"],
+    "lessons": [
+      {
+        "icon": "fa-solid fa-flag",
+        "text": "[IN] India signals include Class 12, 10+2, SSC/HSC, and affiliated college. Example: Class 12 + BCom + affiliated college = India."
+      },
+      {
+        "icon": "fa-solid fa-map-location-dot",
+        "text": "[CA] Canada signals include CEGEP in Quebec, OSSD in Ontario, Diploma, and PG Certificate. Example: Grade 12 + Diploma + PG Certificate = Canada."
+      },
+      {
+        "icon": "fa-solid fa-building-columns",
+        "text": "[US] U.S. signals include Associate degree, community college, GED, and liberal arts college. Example: Community college + Associate + transfer = United States."
+      },
+      {
+        "icon": "fa-solid fa-gears",
+        "text": "[IN] Indian engineering clues include BTech, JEE, and Institute of National Importance. Example: BTech + JEE = India."
+      },
+      {
+        "icon": "fa-solid fa-school",
+        "text": "[CA] Canadian polytechnics can offer both applied diplomas and bachelor's degrees, so a diploma plus degree-granting polytechnic can still be Canada."
+      }
+    ],
     "items": [
       {
         "category": "Terminology",
@@ -392,6 +417,29 @@ export const miniGames = [
     "description": "Recognize the correct academic ladder and spot credentials mixed across systems.",
     "emptyMessage": "Choose the option that correctly classifies the credential pathway.",
     "completionMessage": "Pathway Decode Complete. You correctly classified credential levels.",
+    "flags": ["in", "ca", "us"],
+    "lessons": [
+      {
+        "icon": "fa-solid fa-route",
+        "text": "[US] Common U.S. ladder: High School -> optional Associate -> Bachelor -> Master -> Doctorate. Example: skipping the associate is fine because it is optional."
+      },
+      {
+        "icon": "fa-solid fa-diagram-project",
+        "text": "[CA] Common Canada ladder: Grade 12 -> Diploma or Bachelor -> PG Certificate or Master -> Doctorate. Example: Diploma -> PG Certificate -> Master can be valid in Canada."
+      },
+      {
+        "icon": "fa-solid fa-layer-group",
+        "text": "[IN] Common India ladder: Class 10 -> Class 12 -> Bachelor such as BA, BSc, or BTech -> Master -> PhD. Example: Class 12 is mandatory before any bachelor's."
+      },
+      {
+        "icon": "fa-solid fa-triangle-exclamation",
+        "text": "Red flag: Master before Bachelor is always invalid, and a Doctorate normally needs a Master or another clearly documented advanced-entry path."
+      },
+      {
+        "icon": "fa-solid fa-arrows-left-right",
+        "text": "System mismatch: PG Certificates are Canadian or UK-style credentials, not U.S. signals; Associate degrees are U.S. credentials, not Indian signals."
+      }
+    ],
     "items": [
       {
         "category": "Degree Level",
@@ -732,6 +780,29 @@ export const miniGames = [
     "description": "Open a new tab and use your favorite search engine to verify the applicant's claims. Determine if institutions and campuses actually exist.",
     "emptyMessage": "Conduct web research to verify the claims in the casefile and select the correct status.",
     "completionMessage": "OSINT Desk Complete. You successfully verified real-world facts using external research.",
+    "flags": ["un"],
+    "lessons": [
+      {
+        "icon": "fa-solid fa-square-check",
+        "text": "CHECK: Verify campus locations on official institution websites. Example catch: University of Toronto has no Calgary campus."
+      },
+      {
+        "icon": "fa-solid fa-square-check",
+        "text": "CHECK: Search for known diploma mills before accepting credentials. Example catch: Pacific Western University is a diploma mill."
+      },
+      {
+        "icon": "fa-solid fa-square-check",
+        "text": "CHECK: Prestigious name plus wrong institution type is a scam pattern. Example catch: Stanford Community College does not exist."
+      },
+      {
+        "icon": "fa-solid fa-square-check",
+        "text": "CHECK: Verify the exact city and state, not just the nearby metro area. Example catch: MIT is in Cambridge, MA, not Boston."
+      },
+      {
+        "icon": "fa-solid fa-circle-info",
+        "text": "KNOW: Some legitimate schools have international campuses. Example: CMU Qatar, BITS Dubai, and Northeastern London are real."
+      }
+    ],
     "items": [
       {
         "category": "Campus Verification",
