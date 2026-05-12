@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Rank } from '../types';
 import { miniGames } from '../data';
 
@@ -76,13 +77,17 @@ export const HUD: FC<HUDProps> = ({ score, streak, totalCleared, rank, badges })
 
           <div className={`h-10 w-[2px] bg-glass-border hidden md:block`}></div>
 
-          <div className={`flex flex-col items-start ${rankUp ? 'animate__animated animate__bounce' : ''}`}>
+          <motion.div
+            className="flex flex-col items-start"
+            animate={rankUp ? { y: [0, -8, 0] } : { y: 0 }}
+            transition={{ duration: 0.5, repeat: rankUp ? 2 : 0 }}
+          >
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Operative Rank</span>
             <div className="flex items-center gap-2">
               <i className={`fa-solid ${rankUp ? 'fa-circle-up text-green-400' : 'fa-medal text-amazon-orange'}`}></i>
               <span className={`font-outfit font-bold ${rankUp ? 'text-green-400' : 'text-white'}`}>{rank}</span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Middle: Stats */}
@@ -91,20 +96,20 @@ export const HUD: FC<HUDProps> = ({ score, streak, totalCleared, rank, badges })
           {/* Score */}
           <div className="flex flex-col items-center">
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Mission Score</span>
-            <div className="flex items-center gap-2 text-xl font-mono font-bold text-amazon-orange bg-black/40 px-4 py-1 rounded-md border border-white/5">
+            <motion.div layout className="flex items-center gap-2 text-xl font-mono font-bold text-amazon-orange bg-black/40 px-4 py-1 rounded-md border border-white/5">
               <i className="fa-solid fa-microchip text-xs opacity-50"></i>
               <RollingNumber value={score} />
-            </div>
+            </motion.div>
           </div>
 
           {/* Streak */}
           <div className="flex flex-col items-center">
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Multiplier / Streak</span>
-            <div className={`flex items-center gap-2 text-xl font-mono font-bold px-4 py-1 rounded-md border transition-all duration-300 ${streak >= 3 ? 'text-orange-500 border-orange-500/50 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]' : 'text-gray-400 border-white/5 bg-black/40'}`}>
+            <motion.div layout className={`flex items-center gap-2 text-xl font-mono font-bold px-4 py-1 rounded-md border transition-all duration-300 ${streak >= 3 ? 'text-orange-500 border-orange-500/50 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]' : 'text-gray-400 border-white/5 bg-black/40'}`}>
               <i className={`fa-solid fa-fire ${streak >= 3 ? 'animate-bounce' : ''}`}></i>
               <span>{streak}</span>
               {streak >= 3 && <span className="text-xs bg-orange-500 text-white px-1 rounded ml-1">x{Math.floor(streak/3) + 1}</span>}
-            </div>
+            </motion.div>
           </div>
 
           {/* Badges */}

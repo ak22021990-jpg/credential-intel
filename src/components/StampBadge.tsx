@@ -1,4 +1,6 @@
 import { FC } from 'react';
+import { motion } from 'framer-motion';
+import { bounceIn } from '../motion/variants';
 
 interface StampBadgeProps {
   text: string;
@@ -15,17 +17,26 @@ export const StampBadge: FC<StampBadgeProps> = ({ text, color, className = "" })
   };
 
   return (
-    <div className={`
-      inline-block px-3 py-1 border-2 font-black uppercase tracking-tighter text-sm
-      transform -rotate-12 select-none pointer-events-none opacity-80
-      ${colorMap[color]}
-      ${className}
-      animate__animated animate__bounceIn
-    `} style={{ 
-      fontFamily: '"Courier New", Courier, monospace',
-      boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)'
-    }}>
-      {text}
-    </div>
+    <motion.div
+      variants={bounceIn}
+      initial="hidden"
+      animate="visible"
+      className="inline-block pointer-events-none"
+    >
+      <div
+        className={`
+          inline-block px-3 py-1 border-2 font-black uppercase tracking-tighter text-sm
+          transform -rotate-12 select-none opacity-80
+          ${colorMap[color]}
+          ${className}
+        `}
+        style={{
+          fontFamily: '"Courier New", Courier, monospace',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)'
+        }}
+      >
+        {text}
+      </div>
+    </motion.div>
   );
 };

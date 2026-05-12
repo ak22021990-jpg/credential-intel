@@ -5,6 +5,9 @@
   --color-amazon-darker: #131A22;
   --color-amazon-orange: #FF9900;
   --color-amazon-orange-hover: #E38900;
+  --color-osint-accent: #06B6D4;
+  --color-osint-bg: rgba(6, 182, 212, 0.05);
+  --color-osint-border: rgba(6, 182, 212, 0.2);
   
   --color-glass-bg: rgba(255, 255, 255, 0.05);
   --color-glass-border: rgba(255, 255, 255, 0.1);

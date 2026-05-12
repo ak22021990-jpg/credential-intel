@@ -1,6 +1,8 @@
 import { FC } from 'react';
+import { motion } from 'framer-motion';
 import { MiniGame } from '../types';
 import { StampBadge } from './StampBadge';
+import { fadeIn, fadeInUp, staggerContainer } from '../motion/variants';
 
 interface MissionBriefingProps {
   game: MiniGame;
@@ -35,7 +37,13 @@ export const MissionBriefing: FC<MissionBriefingProps> = ({ game, onBegin, onBac
   const isVerificationLab = game.id === 'verification-lab';
 
   return (
-    <div className="relative flex-1 overflow-hidden rounded-xl border border-amazon-orange/20 bg-black/20 p-5 shadow-[inset_0_0_40px_rgba(255,153,0,0.04)] animate__animated animate__fadeIn">
+    <motion.div
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="relative flex-1 overflow-hidden rounded-xl border border-amazon-orange/20 bg-black/20 p-5 shadow-[inset_0_0_40px_rgba(255,153,0,0.04)]"
+    >
       <div className="pointer-events-none absolute right-4 top-5 opacity-20 sm:right-8 sm:top-8">
         <StampBadge text="CLASSIFIED" color="orange" className="scale-125 sm:scale-150" />
       </div>
@@ -68,16 +76,21 @@ export const MissionBriefing: FC<MissionBriefingProps> = ({ game, onBegin, onBac
             {isVerificationLab ? 'Verification Checklist' : 'Key Intelligence'}
           </h3>
 
-          <div className="grid grid-cols-1 gap-3">
+          <motion.div
+            variants={staggerContainer(0.08)}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 gap-3"
+          >
             {game.lessons.map((lesson, index) => (
-              <article
+              <motion.article
                 key={`${game.id}-lesson-${index}`}
-                className={`animate__animated animate__fadeInUp ${
+                variants={fadeInUp}
+                className={`${
                   isVerificationLab
                     ? 'flex gap-4 rounded-lg border border-white/10 bg-black/35 p-4'
                     : 'rounded-lg border border-white/10 border-l-4 border-l-amazon-orange bg-black/40 p-4'
                 }`}
-                style={{ animationDelay: `${index * 0.08}s` }}
               >
                 {isVerificationLab ? (
                   <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border border-amazon-orange/70 bg-amazon-orange/10 text-amazon-orange">
@@ -92,9 +105,9 @@ export const MissionBriefing: FC<MissionBriefingProps> = ({ game, onBegin, onBac
                 <p className="font-mono text-xs leading-relaxed text-gray-300 md:text-sm">
                   {renderLessonText(lesson.text)}
                 </p>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </section>
 
         <div className="mt-auto flex flex-col gap-3 border-t border-glass-border pt-6 sm:flex-row">
@@ -108,6 +121,6 @@ export const MissionBriefing: FC<MissionBriefingProps> = ({ game, onBegin, onBac
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

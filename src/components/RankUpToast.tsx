@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Rank } from '../types';
 
 interface RankUpToastProps {
@@ -26,11 +27,14 @@ export const RankUpToast: FC<RankUpToastProps> = ({ rank, onClose }) => {
   };
 
   return (
-    <div className={`
+    <motion.div
+      initial={{ opacity: 0, y: -48, x: '-50%', scale: 0.95 }}
+      animate={visible ? { opacity: 1, y: 0, x: '-50%', scale: 1 } : { opacity: 0, y: -48, x: '-50%', scale: 0.95 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className={`
       fixed top-24 left-1/2 -translate-x-1/2 z-[200]
-      transition-all duration-1000 ease-out
-      ${visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-12 scale-95'}
-    `}>
+    `}
+    >
       <div className="bg-amazon-orange text-amazon-darker px-8 py-4 rounded-2xl shadow-[0_0_50px_rgba(255,153,0,0.4)] flex items-center gap-6 border-2 border-white/20">
         <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl animate-pulse">
           <i className={`fa-solid ${rankIcons[rank]}`}></i>
@@ -40,6 +44,6 @@ export const RankUpToast: FC<RankUpToastProps> = ({ rank, onClose }) => {
           <p className="text-2xl font-outfit font-bold">New Rank: {rank}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

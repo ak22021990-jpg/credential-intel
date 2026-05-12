@@ -13,6 +13,16 @@ export interface QuestionItem {
   explanation: string;
 }
 
+export interface AnswerRecord {
+  question: string;
+  context: string;
+  options: Option[];
+  userAnswerIndex: number;
+  correctAnswerIndex: number;
+  isCorrect: boolean;
+  explanation: string;
+}
+
 export interface Lesson {
   icon: string;
   text: string;
@@ -33,6 +43,7 @@ export interface MiniGame {
 export interface CompletedGame {
   score: number;
   total: number;
+  timeTaken?: number;
 }
 
 export interface FeedbackState {

@@ -1,6 +1,6 @@
 import { useEffect, useState, FC } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import 'animate.css';
 import './App.css';
 import { miniGames, referenceData, differenceData } from './data';
 import { 
@@ -9,7 +9,8 @@ import {
   FeedbackState, 
   Rank, 
   QuestionItem,
-  PersistedState 
+  PersistedState,
+  AnswerRecord
 } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { HUD } from './components/HUD';
@@ -17,6 +18,19 @@ import { StampBadge } from './components/StampBadge';
 import { RankUpToast } from './components/RankUpToast';
 import { AccordionGroup, AccordionItem } from './components/Accordion';
 import { MissionBriefing } from './components/MissionBriefing';
+import { GameTimer, ResearchPrompt } from './components/OSINTElements';
+import {
+  backInRight,
+  fadeIn,
+  fadeInLeft,
+  fadeInRight,
+  fadeInUp,
+  headShake,
+  pulse,
+  staggerContainer,
+  zoomIn
+} from './motion/variants';
+import { AnswerReview } from './components/AnswerReview';
 
 
 interface HeroProps {
@@ -25,7 +39,13 @@ interface HeroProps {
 
 const Hero: FC<HeroProps> = ({ onStart }) => {
   return (
-    <section className="text-center py-16 px-4 max-w-3xl mx-auto animate__animated animate__zoomIn">
+    <motion.section
+      variants={zoomIn}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="text-center py-16 px-4 max-w-3xl mx-auto"
+    >
       <h1 className="text-5xl md:text-6xl mb-4 leading-tight font-outfit font-bold">
         Global Credential <span className="text-amazon-orange">Intelligence</span>
       </h1>
@@ -33,11 +53,17 @@ const Hero: FC<HeroProps> = ({ onStart }) => {
         Step into the operations center. Master education systems, conduct open-source verification, and climb the ranks.
       </p>
       <div>
-        <button onClick={onStart} className="btn-primary animate__animated animate__pulse animate__infinite">
+        <motion.button
+          onClick={onStart}
+          variants={pulse}
+          initial="hidden"
+          animate="pulse"
+          className="btn-primary"
+        >
           <i className="fa-solid fa-play"></i> Initiate Training
-        </button>
+        </motion.button>
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -85,7 +111,13 @@ const LeaderboardModal: FC<LeaderboardModalProps> = ({ onClose, totalScore, user
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate__animated animate__fadeIn">
+    <motion.div
+      variants={fadeIn}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+    >
       <div className="bg-glass-bg border border-glass-border p-8 rounded-2xl w-full max-w-md shadow-2xl relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
           <i className="fa-solid fa-xmark text-xl"></i>
@@ -134,78 +166,19 @@ const LeaderboardModal: FC<LeaderboardModalProps> = ({ onClose, totalScore, user
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-const IntelVault: FC = () => {
-  return (
-    <aside className="flex flex-col gap-4 animate__animated animate__fadeInRight w-full lg:w-80">
-      <div className="glassmorphism p-4 border-l-4 border-l-amazon-orange">
-        <h2 className="text-xl mb-6 pb-3 flex items-center gap-2 border-b border-glass-border font-outfit uppercase tracking-wider">
-          <i className="fa-solid fa-book-journal-whills"></i> Intel Vault
-        </h2>
-        <p className="text-[10px] text-gray-500 mb-6 uppercase font-mono bg-black/30 p-2 rounded">Authorized Access Only // OSINT Data</p>
-        <div className="flex flex-col gap-6">
-          {referenceData.map((item, idx) => {
-            const flagCode = item.country === "United States" ? "us" : item.country === "Canada" ? "ca" : item.country === "India" ? "in" : "un";
-            return (
-              <article key={idx} className="relative bg-[#f4f1ea] text-black rounded-sm p-4 shadow-[2px_2px_10px_rgba(0,0,0,0.5)] transform rotate-1 hover:rotate-0 transition-transform duration-300">
-                {/* Paper Texture Overlay */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/p6.png")' }}></div>
-                
-                <div className="flex justify-between items-center mb-3 relative z-10">
-                  <h3 className="text-amazon-darker font-black font-mono text-base uppercase border-b-2 border-amazon-darker">
-                    {item.country}
-                  </h3>
-                  <img 
-                    src={`https://flagcdn.com/w40/${flagCode}.png`} 
-                    alt={item.country} 
-                    className="w-8 shadow-sm border border-black/20"
-                  />
-                </div>
-                
-                <p className="text-xs font-bold text-gray-700 mb-3 relative z-10 leading-relaxed uppercase">
-                  {item.summary}
-                </p>
-                
-                <ul className="list-none space-y-2 relative z-10">
-                  {item.points.map((point, pIdx) => (
-                    <li key={pIdx} className="text-[11px] font-mono flex gap-2">
-                      <span className="text-amazon-orange">▶</span> {point}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Confidential Stamp */}
-                <div className="absolute -bottom-2 -right-2 opacity-20 pointer-events-none rotate-12">
-                   <StampBadge text="INTERNAL" color="gray" className="scale-50" />
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-      <div className="glassmorphism p-4 border-l-4 border-l-gray-500 mt-4">
-        <h2 className="text-xl mb-6 pb-3 flex items-center gap-2 border-b border-glass-border font-outfit uppercase tracking-wider">
-          <i className="fa-solid fa-code-compare"></i> Core Differences
-        </h2>
-        <div className="flex flex-col gap-4">
-          {differenceData.map((item, idx) => (
-            <article key={idx} className="bg-black/40 border border-white/5 rounded-lg p-4 text-xs">
-              <h3 className="text-amazon-orange mb-2 font-outfit font-bold uppercase tracking-widest">{item.title}</h3>
-              <p className="text-gray-400 leading-relaxed font-mono">{item.body}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </aside>
+    </motion.div>
   );
 }
 
 const IntelVaultAccordions: FC = () => {
   return (
-    <aside className="flex flex-col gap-4 animate__animated animate__fadeInRight w-full lg:w-80">
+    <motion.aside
+      variants={fadeInRight}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="flex flex-col gap-4 w-full lg:w-80"
+    >
       <div className="glassmorphism p-4 border-l-4 border-l-amazon-orange">
         <h2 className="text-xl mb-6 pb-3 flex items-center gap-2 border-b border-glass-border font-outfit uppercase tracking-wider">
           <i className="fa-solid fa-book-journal-whills"></i> Intel Vault
@@ -281,7 +254,7 @@ const IntelVaultAccordions: FC = () => {
           )}
         </AccordionGroup>
       </div>
-    </aside>
+    </motion.aside>
   );
 }
 
@@ -328,6 +301,11 @@ export default function App() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
+  const [answerHistory, setAnswerHistory] = useState<AnswerRecord[]>([]);
+  const [showReview, setShowReview] = useState(false);
+  const [gameStartTime, setGameStartTime] = useState<number | null>(null);
+  const [gameElapsedTime, setGameElapsedTime] = useState(0);
+  const [gameFinalTime, setGameFinalTime] = useState(0);
   
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [rankUpNotif, setRankUpNotif] = useState<Rank | null>(null);
@@ -336,6 +314,8 @@ export default function App() {
   const activeGame = miniGames.find(g => g.id === activeGameId);
   const briefingGame = miniGames.find(g => g.id === briefingGameId);
   const PASSING_SCORE = 4;
+  const isOSINT = activeGameId === 'verification-lab';
+  const isOSINTSpeedRun = isOSINT && gameFinalTime > 0 && gameFinalTime < 180000;
 
   const resetQuestionState = (message: string | null = null) => {
     setSelectedOption(null);
@@ -366,6 +346,11 @@ export default function App() {
     setScore(0);
     setStreak(0);
     setMultiplier(1);
+    setAnswerHistory([]);
+    setShowReview(false);
+    setGameStartTime(id === 'verification-lab' ? Date.now() : null);
+    setGameElapsedTime(0);
+    setGameFinalTime(0);
     resetQuestionState(game.emptyMessage);
   };
 
@@ -382,6 +367,11 @@ export default function App() {
     setScore(0);
     setStreak(0);
     setMultiplier(1);
+    setAnswerHistory([]);
+    setShowReview(false);
+    setGameStartTime(null);
+    setGameElapsedTime(0);
+    setGameFinalTime(0);
     resetQuestionState();
   };
 
@@ -401,6 +391,11 @@ export default function App() {
     setScore(0);
     setStreak(0);
     setMultiplier(1);
+    setAnswerHistory([]);
+    setShowReview(false);
+    setGameStartTime(null);
+    setGameElapsedTime(0);
+    setGameFinalTime(0);
     resetQuestionState();
   };
 
@@ -411,6 +406,18 @@ export default function App() {
     const isCorrect = selectedOption === scenario.answer;
     
     setAnswered(true);
+    setAnswerHistory(prev => [
+      ...prev,
+      {
+        question: scenario.question,
+        context: scenario.context,
+        options: scenario.options,
+        userAnswerIndex: selectedOption,
+        correctAnswerIndex: scenario.answer,
+        isCorrect,
+        explanation: scenario.explanation
+      }
+    ]);
 
     if (isCorrect) {
       const newStreak = streak + 1;
@@ -418,7 +425,7 @@ export default function App() {
       
       setStreak(newStreak);
       setMultiplier(newMultiplier);
-      setScore(prev => prev + (1 * multiplier)); // Track 1.1 Fix: Ensure multiplier is applied
+      setScore(prev => prev + (1 * newMultiplier));
       
       // Earn special streak badge if streak hits 5
       if (newStreak === 5 && !earnedBadges.includes('streak-master')) {
@@ -443,16 +450,31 @@ export default function App() {
     if (currentIndex >= activeGameItems.length - 1) {
       const total = activeGameItems.length;
       const hasPassed = score >= PASSING_SCORE;
+      const finalTime = isOSINT && gameStartTime !== null ? Date.now() - gameStartTime : 0;
+
+      if (isOSINT) {
+        setGameFinalTime(finalTime);
+        setGameElapsedTime(finalTime);
+      }
       
       if (hasPassed && activeGame) {
         setCompletedGames(prev => ({
           ...prev,
-          [activeGame.id]: { score, total }
+          [activeGame.id]: {
+            score: Math.max(prev[activeGame.id]?.score ?? 0, score),
+            total,
+            timeTaken: isOSINT && finalTime > 0
+              ? Math.min(prev[activeGame.id]?.timeTaken ?? finalTime, finalTime)
+              : prev[activeGame.id]?.timeTaken
+          }
         }));
         
         let newBadges = [...earnedBadges];
         if (score === 5 && !newBadges.includes(`${activeGame.id}-flawless`)) {
            newBadges.push(`${activeGame.id}-flawless`);
+        }
+        if (isOSINT && finalTime > 0 && finalTime < 180000 && !newBadges.includes('speed-analyst')) {
+          newBadges.push('speed-analyst');
         }
         setEarnedBadges(newBadges);
         
@@ -491,6 +513,18 @@ export default function App() {
     setLastRank(rank);
   }, [rank, lastRank]);
 
+  useEffect(() => {
+    if (!isOSINT || gameStartTime === null || currentIndex < 0 || currentIndex >= activeGameItems.length) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setGameElapsedTime(Date.now() - gameStartTime);
+    }, 100);
+
+    return () => window.clearInterval(timer);
+  }, [activeGameItems.length, currentIndex, gameStartTime, isOSINT]);
+
   const resetAllProgress = () => {
     if (window.confirm("Are you sure you want to wipe all classified progress? This cannot be undone.")) {
       setPersistedState({
@@ -514,19 +548,43 @@ export default function App() {
         <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-world-map-hologram-4392-large.mp4" type="video/mp4" />
       </video>
       <div className="scanline-overlay"></div>
-      {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} totalScore={totalScore} username={username} setUsername={setUsername} />}
+      <AnimatePresence>
+        {showLeaderboard && (
+          <LeaderboardModal
+            onClose={() => setShowLeaderboard(false)}
+            totalScore={totalScore}
+            username={username}
+            setUsername={setUsername}
+          />
+        )}
+      </AnimatePresence>
       {rankUpNotif && <RankUpToast rank={rankUpNotif} onClose={() => setRankUpNotif(null)} />}
       
       <HUD score={totalScore + score} streak={streak} totalCleared={totalCleared} rank={rank} badges={earnedBadges} />
       
       <main className="flex-1 p-4 md:p-8 max-w-[1600px] mx-auto w-full">
+        <AnimatePresence mode="wait">
         {!started ? (
-          <Hero onStart={handleStart} />
+          <motion.div key="hero" variants={fadeIn} initial="hidden" animate="visible" exit="exit">
+            <Hero onStart={handleStart} />
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr_350px] gap-8 items-start">
+          <motion.div
+            key="operations"
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="grid grid-cols-1 lg:grid-cols-[300px_1fr_350px] gap-8 items-start"
+          >
             
             {/* Operations Panel */}
-            <aside className="glassmorphism p-6 animate__animated animate__fadeInLeft w-full flex flex-col gap-6">
+            <motion.aside
+              variants={fadeInLeft}
+              initial="hidden"
+              animate="visible"
+              className="glassmorphism p-6 w-full flex flex-col gap-6"
+            >
               <div className="border-b border-glass-border pb-4">
                 <h2 className="text-xl flex items-center gap-2 font-outfit uppercase tracking-widest text-amazon-orange">
                   <i className="fa-solid fa-folder-closed"></i> Operations Map
@@ -634,27 +692,56 @@ export default function App() {
                   <i className="fa-solid fa-trash-can"></i> Reset All Progress
                 </button>
               </div>
-            </aside>
+            </motion.aside>
 
             {/* Case Panel */}
-            <section className="glassmorphism p-6 md:p-10 min-h-[500px] flex flex-col animate__animated animate__fadeInUp w-full">
+            <motion.section
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              className="glassmorphism p-6 md:p-10 min-h-[500px] flex flex-col w-full"
+            >
+              <AnimatePresence mode="wait">
               {briefingGameId && briefingGame ? (
-                <MissionBriefing
-                  game={briefingGame}
-                  onBegin={beginFromBriefing}
-                  onBack={handleReset}
-                />
+                <motion.div
+                  key="briefing"
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="flex flex-1"
+                >
+                  <MissionBriefing
+                    game={briefingGame}
+                    onBegin={beginFromBriefing}
+                    onBack={handleReset}
+                  />
+                </motion.div>
               ) : !activeGameId ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center">
+                <motion.div
+                  key="waiting"
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="flex-1 flex flex-col items-center justify-center text-center"
+                >
                   <div className="w-24 h-24 bg-amazon-orange/10 rounded-full flex items-center justify-center mb-6 border border-amazon-orange">
                      <i className="fa-solid fa-satellite-dish text-4xl text-amazon-orange animate-pulse"></i>
                   </div>
                   <h3 className="text-3xl font-outfit mb-3">Awaiting Assignment...</h3>
                   <p className="text-gray-400 text-lg max-w-md">Select an operation from the map to begin analyzing cases and verifying intel.</p>
-                </div>
+                </motion.div>
               ) : currentIndex >= activeGameItems.length ? (
                 // Completion State
-                <div className="flex-1 flex flex-col animate__animated animate__fadeIn">
+                <motion.div
+                  key="completion"
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="flex-1 flex flex-col"
+                >
                   <div className="flex justify-between items-end mb-8 border-b border-glass-border pb-6">
                     <div className="flex flex-col gap-1">
                       <span className="bg-amazon-orange text-amazon-darker px-3 py-1 rounded text-[10px] font-black uppercase tracking-[0.2em] w-fit">Mission Debrief</span>
@@ -708,11 +795,33 @@ export default function App() {
                         </div>
                       </div>
 
+                      {isOSINT && gameFinalTime > 0 && (
+                        <motion.div
+                          variants={fadeInUp}
+                          initial="hidden"
+                          animate="visible"
+                          className="bg-osint-bg border border-osint-border p-5 rounded-2xl flex items-center gap-4"
+                        >
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osint-accent/15 text-xl text-osint-accent">
+                            <i className="fa-solid fa-stopwatch"></i>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold uppercase tracking-widest text-osint-accent">Total Research Time</p>
+                            <GameTimer elapsedTime={gameFinalTime} label="Completed In" />
+                          </div>
+                        </motion.div>
+                      )}
+
                       {score >= PASSING_SCORE && (
-                        <div className="bg-amazon-orange/5 border border-amazon-orange/20 p-6 rounded-2xl animate__animated animate__fadeInUp">
+                        <motion.div
+                          variants={fadeInUp}
+                          initial="hidden"
+                          animate="visible"
+                          className="bg-amazon-orange/5 border border-amazon-orange/20 p-6 rounded-2xl"
+                        >
                            <h4 className="text-sm uppercase tracking-widest text-amazon-orange font-bold mb-3">Intelligence Summary</h4>
                            <p className="text-gray-300 text-sm leading-relaxed italic">"{activeGame?.completionMessage}"</p>
-                        </div>
+                        </motion.div>
                       )}
                     </div>
 
@@ -722,7 +831,12 @@ export default function App() {
                        {score >= PASSING_SCORE ? (
                          <div className="flex flex-col gap-4">
                            {/* Badge Unlock */}
-                           <div className="bg-glass-bg border border-white/10 p-4 rounded-xl flex items-center gap-4 animate__animated animate__zoomIn">
+                           <motion.div
+                             variants={zoomIn}
+                             initial="hidden"
+                             animate="visible"
+                             className="bg-glass-bg border border-white/10 p-4 rounded-xl flex items-center gap-4"
+                           >
                              <div className="w-12 h-12 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center text-xl shadow-[0_0_15px_rgba(34,197,94,0.3)]">
                                <i className="fa-solid fa-certificate"></i>
                              </div>
@@ -730,10 +844,16 @@ export default function App() {
                                <p className="text-xs text-gray-500 uppercase font-bold">Standard Achievement</p>
                                <p className="font-outfit font-bold">Operation Cleared</p>
                              </div>
-                           </div>
+                           </motion.div>
 
                            {score === 5 && (
-                             <div className="bg-amazon-orange/10 border border-amazon-orange/50 p-4 rounded-xl flex items-center gap-4 animate__animated animate__backInRight" style={{ animationDelay: '0.5s' }}>
+                             <motion.div
+                               variants={backInRight}
+                               initial="hidden"
+                               animate="visible"
+                               transition={{ delay: 0.5 }}
+                               className="bg-amazon-orange/10 border border-amazon-orange/50 p-4 rounded-xl flex items-center gap-4"
+                             >
                                <div className="w-12 h-12 bg-amazon-orange text-amazon-darker rounded-full flex items-center justify-center text-xl shadow-[0_0_20px_rgba(255,153,0,0.5)] glow-active">
                                  <i className="fa-solid fa-award"></i>
                                </div>
@@ -741,7 +861,25 @@ export default function App() {
                                  <p className="text-xs text-amazon-orange uppercase font-bold">Elite Status</p>
                                  <p className="font-outfit font-bold">Flawless Execution</p>
                                </div>
-                             </div>
+                             </motion.div>
+                           )}
+
+                           {isOSINTSpeedRun && (
+                             <motion.div
+                               variants={backInRight}
+                               initial="hidden"
+                               animate="visible"
+                               transition={{ delay: 0.65 }}
+                               className="bg-osint-bg border border-osint-border p-4 rounded-xl flex items-center gap-4"
+                             >
+                               <div className="w-12 h-12 bg-osint-accent text-amazon-darker rounded-full flex items-center justify-center text-xl shadow-[0_0_20px_rgba(6,182,212,0.35)]">
+                                 <i className="fa-solid fa-stopwatch"></i>
+                               </div>
+                               <div>
+                                 <p className="text-xs text-osint-accent uppercase font-bold">Rapid Research</p>
+                                 <p className="font-outfit font-bold">Speed Analyst</p>
+                               </div>
+                             </motion.div>
                            )}
 
                            <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4 opacity-50 italic">
@@ -763,6 +901,12 @@ export default function App() {
                     </div>
                   </div>
 
+                  <AnswerReview
+                    history={answerHistory}
+                    visible={showReview}
+                    onToggle={() => setShowReview(prev => !prev)}
+                  />
+
                   <div className="flex gap-4 mt-auto pt-8 border-t border-glass-border">
                     {score >= PASSING_SCORE ? (
                       <button onClick={handleReset} className="btn-secondary w-full text-lg py-4 group">
@@ -774,55 +918,75 @@ export default function App() {
                       </button>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ) : (
                 // Active Question State
-                <div className="flex-1 flex flex-col">
+                <motion.div
+                  key={`active-${currentIndex}`}
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="flex-1 flex flex-col"
+                >
                   <div className="flex justify-between items-end mb-8">
                     <div className="flex gap-2">
-                      <span className="bg-amazon-orange text-amazon-darker px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">{activeGame?.badge}</span>
+                      <span className={`${isOSINT ? 'bg-osint-accent' : 'bg-amazon-orange'} text-amazon-darker px-3 py-1 rounded text-xs font-bold uppercase tracking-wider`}>{activeGame?.badge}</span>
                       <span className="border border-glass-border text-gray-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">{activeGameItems[currentIndex].category}</span>
                     </div>
-                    <div className="text-right min-w-[150px]">
+                    <div className="text-right min-w-[150px] flex flex-col items-end gap-2">
+                      {isOSINT && <GameTimer elapsedTime={gameElapsedTime} />}
                       <span className="text-sm text-gray-400 mb-1 block">Progression: {Math.round(((currentIndex + (answered ? 1 : 0)) / activeGameItems.length) * 100)}%</span>
                       <div className="h-1.5 bg-glass-border rounded-full overflow-hidden">
-                        <div className="h-full bg-amazon-orange transition-all duration-400" style={{ width: `${Math.round(((currentIndex + (answered ? 1 : 0)) / activeGameItems.length) * 100)}%` }}></div>
+                        <div className={`h-full ${isOSINT ? 'bg-osint-accent' : 'bg-amazon-orange'} transition-all duration-[400ms]`} style={{ width: `${Math.round(((currentIndex + (answered ? 1 : 0)) / activeGameItems.length) * 100)}%` }}></div>
                       </div>
                     </div>
                   </div>
 
+                  {isOSINT && <ResearchPrompt question={activeGameItems[currentIndex].question} />}
+
                   <h3 className="text-2xl font-outfit mb-3 leading-snug">{activeGameItems[currentIndex].question}</h3>
                   <p className="text-lg text-gray-400 mb-8 leading-relaxed">{activeGameItems[currentIndex].context}</p>
 
-                  <div className="flex flex-col gap-4 mb-8">
+                  <motion.div
+                    variants={staggerContainer(0.1)}
+                    initial="hidden"
+                    animate="visible"
+                    className="flex flex-col gap-4 mb-8"
+                  >
                     {activeGameItems[currentIndex].options.map((option, idx) => {
                       const isSelected = selectedOption === idx;
                       const isCorrectAnswer = activeGameItems[currentIndex].answer === idx;
                       
-                      let cardClass = "bg-glass-bg border border-glass-border rounded-xl p-5 cursor-pointer flex items-center gap-4 transition-all duration-200 hover:bg-glass-hover hover:border-white/30";
-                      if (isSelected && !answered) cardClass = "bg-amazon-orange/5 border border-amazon-orange rounded-xl p-5 cursor-pointer flex items-center gap-4 transition-all duration-200";
+                      let cardClass = `bg-glass-bg border ${isOSINT ? 'border-osint-border hover:border-osint-accent/60' : 'border-glass-border hover:border-white/30'} rounded-xl p-5 cursor-pointer flex items-center gap-4 transition-all duration-200 hover:bg-glass-hover`;
+                      if (isSelected && !answered) cardClass = `${isOSINT ? 'bg-osint-bg border border-osint-accent' : 'bg-amazon-orange/5 border border-amazon-orange'} rounded-xl p-5 cursor-pointer flex items-center gap-4 transition-all duration-200`;
                       if (answered && isCorrectAnswer) cardClass = "bg-green-500/10 border border-green-500 rounded-xl p-5 flex items-center gap-4 transition-all duration-200";
-                      if (answered && isSelected && !isCorrectAnswer) cardClass = "bg-red-500/10 border border-red-500 rounded-xl p-5 flex items-center gap-4 transition-all duration-200 animate__animated animate__headShake";
+                      if (answered && isSelected && !isCorrectAnswer) cardClass = "bg-red-500/10 border border-red-500 rounded-xl p-5 flex items-center gap-4 transition-all duration-200";
 
                       return (
-                        <label key={idx} className={`${cardClass} animate__animated animate__fadeInUp`} style={{ animationDelay: `${idx * 0.1}s` }}>
+                        <motion.label
+                          key={idx}
+                          variants={answered && isSelected && !isCorrectAnswer ? headShake : fadeInUp}
+                          animate={answered && isSelected && !isCorrectAnswer ? 'shake' : undefined}
+                          className={cardClass}
+                        >
                           <input 
                             type="radio" 
                             name="option" 
                             value={idx} 
                             checked={isSelected}
                             onChange={() => !answered && setSelectedOption(idx)}
-                            className="accent-amazon-orange w-5 h-5 cursor-pointer"
+                            className={`${isOSINT ? 'accent-osint-accent' : 'accent-amazon-orange'} w-5 h-5 cursor-pointer`}
                             disabled={answered}
                           />
                           <div className="flex flex-col">
                             <strong className="font-outfit text-lg mb-1">{option.title}</strong>
                             <span className="text-sm text-gray-400">{option.detail}</span>
                           </div>
-                        </label>
+                        </motion.label>
                       );
                     })}
-                  </div>
+                  </motion.div>
 
                   <div className="flex gap-4 mt-auto">
                     <button onClick={submitAnswer} disabled={selectedOption === null || answered} className="btn-primary">
@@ -833,21 +997,31 @@ export default function App() {
                     </button>
                   </div>
 
-                  {feedback && (
-                    <div className={`mt-6 p-5 rounded-xl font-medium leading-relaxed bg-glass-bg border border-glass-border animate__animated animate__fadeIn ${feedback.type === 'success' ? 'border-l-4 border-l-green-500 bg-green-500/10' : feedback.type === 'error' ? 'border-l-4 border-l-red-500 bg-red-500/10' : ''}`}>
-                      {feedback.type === 'success' ? <i className="fa-solid fa-circle-check mr-2"></i> : feedback.type === 'error' ? <i className="fa-solid fa-circle-exclamation mr-2"></i> : ''}
-                      {feedback.message}
-                    </div>
-                  )}
-                </div>
+                  <AnimatePresence>
+                    {feedback && (
+                      <motion.div
+                        variants={fadeIn}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className={`mt-6 p-5 rounded-xl font-medium leading-relaxed bg-glass-bg border border-glass-border ${feedback.type === 'success' ? 'border-l-4 border-l-green-500 bg-green-500/10' : feedback.type === 'error' ? 'border-l-4 border-l-red-500 bg-red-500/10' : ''}`}
+                      >
+                        {feedback.type === 'success' ? <i className="fa-solid fa-circle-check mr-2"></i> : feedback.type === 'error' ? <i className="fa-solid fa-circle-exclamation mr-2"></i> : ''}
+                        {feedback.message}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               )}
-            </section>
+              </AnimatePresence>
+            </motion.section>
 
             {/* Intel Panel */}
             <IntelVaultAccordions />
 
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </main>
     </div>
   );
